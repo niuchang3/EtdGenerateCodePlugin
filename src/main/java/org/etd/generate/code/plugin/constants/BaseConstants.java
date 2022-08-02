@@ -1,0 +1,16 @@
+package org.etd.generate.code.plugin.constants;
+
+import com.intellij.database.model.basic.BasicElement;
+import com.intellij.database.view.DataSourceNode;
+import com.intellij.openapi.actionSystem.DataKey;
+
+public class BaseConstants {
+
+
+    public static final DataKey<Object[]> DATABASE_NODES_KEY = DataKey.create("DATABASE_NODES");
+
+    public static final DataKey<BasicElement[]> DATABASE_ELEMENTS = DataKey.create("DATABASE_ELEMENTS");
+
+    public static final DataKey<DataSourceNode[]> DATABASE_RELATED_DATA_SOURCES = DataKey.create("DATABASE_RELATED_DATA_SOURCES");
+
+}

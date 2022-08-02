@@ -1,0 +1,38 @@
+<idea-plugin>
+    <id>org.etd.generate.code.plugin</id>
+    <name>EtdGenerateCodePlugin</name>
+    <vendor email="281344730@qq.com" url="">牛昌</vendor>
+
+    <description>
+        <![CDATA[
+            <tag>EtdGenerateCodePlugin,GenerateCodePlugin</tag>
+        ]]>
+    </description>
+
+    <!-- please see https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html
+         on how to target different products -->
+    <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.java</depends>
+    <depends>com.intellij.database</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- Add your extensions here -->
+        <notificationGroup id="EtdGenerateCodePlugin Notification Group" displayType="BALLOON"/>
+        <applicationService serviceImplementation="org.etd.generate.code.plugin.storage.SettingsStorage"></applicationService>
+    </extensions>
+
+    <actions>
+        <!-- Add your actions here -->
+        <group id="org.etd.generate.code.plugin.action"
+               class="org.etd.generate.code.plugin.action.EtdGenerateCodeActionGroup" text="EtdGenerateCode"
+               popup="true">
+            <add-to-group group-id="DatabaseViewPopupMenu" anchor="first"/>
+        </group>
+
+        <!--        <action id="org.etd.generate.code.plugin.action.EtdGenerateCodeMainAction"-->
+        <!--                class="org.etd.generate.code.plugin.action.EtdGenerateCodeMainAction" text="EtdGenerateCode"-->
+        <!--                description="代码生成">-->
+        <!--            <add-to-group group-id="DatabaseView.Tools" anchor="first"/>-->
+        <!--        </action>-->
+    </actions>
+</idea-plugin>
