@@ -23,7 +23,7 @@ intellij {
     version = '2021.2.3'
     type = 'IU'
     plugins = ['com.intellij.java','com.intellij.database']
-    sandboxDir = "${rootProject.rootDir}/idea-sandbox"
+    sandboxDir = "${rootProject.rootDir}/sandbox"
 //    sandboxDirectory = "${rootProject.rootDir}/idea-sandbox"
 }
 patchPluginXml {
