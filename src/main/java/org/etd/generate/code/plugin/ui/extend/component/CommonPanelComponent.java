@@ -1,12 +1,17 @@
 package org.etd.generate.code.plugin.ui.extend.component;
 
-import com.google.common.collect.Lists;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import lombok.Data;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.etd.generate.code.plugin.bean.Settings;
+import org.etd.generate.code.plugin.bean.Template;
+import org.etd.generate.code.plugin.context.GenerateCodeContextHelper;
 
 import javax.swing.*;
-import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 @Data
 public class CommonPanelComponent {
@@ -15,7 +20,6 @@ public class CommonPanelComponent {
     private JComboBox templateField;
     private JPanel templatePanel;
 
-    private ArrayList<String> checkList = Lists.newArrayList("111.vm", "222.vm", "333.vm", "4444.vm", "555.vm");
 
     public CommonPanelComponent() {
         init();
@@ -28,31 +32,40 @@ public class CommonPanelComponent {
     }
 
     private void initTemplatePanel() {
-        int row = checkList.size() / 3;
-        if (checkList.size() % 3 > 0) {
-            row++;
-        }
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(row, 3);
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(6, 3);
         templatePanel.setLayout(gridLayoutManager);
-        refreshTemplatePanel();
     }
 
     private void initEvent() {
         templateField.addActionListener(templateGroup -> {
-            refreshTemplatePanel();
+            JComboBox source = (JComboBox) templateGroup.getSource();
+            refreshTemplatePanel((String) source.getSelectedItem());
         });
     }
 
     private void initTemplate() {
-        templateField.addItem("test1");
-        templateField.addItem("test2");
-        templateField.addItem("test3");
+        Settings setting = GenerateCodeContextHelper.getContext().getSetting();
+        setting.getTemplates().forEach((k, v) -> {
+            templateField.addItem(k);
+        });
+        refreshTemplatePanel((String) templateField.getSelectedItem());
     }
 
-    private void refreshTemplatePanel() {
+    private void refreshTemplatePanel(String templateName) {
         templatePanel.removeAll();
         int row = 0;
-        for (int i = 0; i < checkList.size(); i++) {
+        Settings setting = GenerateCodeContextHelper.getContext().getSetting();
+        Map<String, List<Template>> tamplates = setting.getTemplates();
+        if (ObjectUtils.isEmpty(tamplates)) {
+            return;
+        }
+        List<Template> templateList = tamplates.get(templateName);
+        if (CollectionUtils.isEmpty(templateList)) {
+//            NotificationMessageUtils.notifyError(GenerateCodeContextHelper.getContext().getProject(), "template is null");
+            return;
+        }
+
+        for (int i = 0; i < templateList.size(); i++) {
             GridConstraints gridConstraints = new GridConstraints();
             gridConstraints.setVSizePolicy(0);
             gridConstraints.setHSizePolicy(3);
@@ -63,7 +76,7 @@ public class CommonPanelComponent {
             gridConstraints.setColSpan(1);
             gridConstraints.setColumn(i % 3);
             gridConstraints.setUseParentLayout(true);
-            JCheckBox jCheckBox = new JCheckBox(checkList.get(i));
+            JCheckBox jCheckBox = new JCheckBox(templateList.get(i).getName());
 
             templatePanel.add(jCheckBox, gridConstraints, i);
             if (i != 0 && (i + 1) % 3 == 0) {

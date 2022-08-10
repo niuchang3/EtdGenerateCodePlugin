@@ -40,25 +40,19 @@ public class Settings {
      */
     private String currentTemplateGroup;
     /**
-     * 当前使用的映射
-     */
-    private String currentTypeMapping;
-
-    /**
      * 字段映射
      */
-    private Map<String, List<TypeMapping>> typeMappings;
+    private List<TypeMapping> typeMappings;
     /**
      * vm模板
      */
-    private Map<String, List<Template>> tamplates;
+    private Map<String, List<Template>> templates;
 
 
     private static Settings resetDefaultSetting() {
         URL configUrl = Settings.class.getResource("/defaultConfig.json");
         Settings settings = null;
         try {
-
             String jsonStr = UrlUtil.loadText(configUrl);
             settings = new Gson().fromJson(jsonStr, Settings.class);
         } catch (IOException e) {

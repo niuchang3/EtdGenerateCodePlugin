@@ -7,14 +7,16 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.compress.utils.Lists;
-import org.etd.generate.code.plugin.context.GenerateCodeContextHelper;
+import org.apache.commons.lang3.StringUtils;
+import org.etd.generate.code.plugin.bean.TableInfo;
 import org.etd.generate.code.plugin.context.GenerateCodeContext;
+import org.etd.generate.code.plugin.context.GenerateCodeContextHelper;
 import org.etd.generate.code.plugin.listener.PackageButtonActionListener;
 import org.etd.generate.code.plugin.listener.PathButtonActionListener;
-import org.etd.generate.code.plugin.tool.NotificationMessageUtils;
 import org.etd.generate.code.plugin.ui.BaseDialogWrapper;
 import org.etd.generate.code.plugin.ui.extend.component.AdvancedPanelComponent;
 import org.etd.generate.code.plugin.ui.extend.component.CommonPanelComponent;
+import org.etd.generate.code.plugin.utils.NotificationMessageUtils;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
@@ -53,7 +55,7 @@ public class GenerateCodeMainPage extends BaseDialogWrapper {
 
 
     public GenerateCodeMainPage(AnActionEvent event) {
-        super(event, false, "EtdGenerateCode Title Info", 500, 300);
+        super(event, false, "EtdGenerateCode", 500, 300);
         initDialog();
     }
 
@@ -63,6 +65,9 @@ public class GenerateCodeMainPage extends BaseDialogWrapper {
         initTablesField();
         // 填充默认的代码生成路径
         pathField.setText(GenerateCodeContextHelper.getContext().getProject().getBasePath());
+        pathField.setEditable(false);
+//        packageField.setEditable(false);
+        showButton(false);
         generateTypeGroup.add(commonButton);
         generateTypeGroup.add(advancedButton);
         addActionListener();
@@ -178,6 +183,69 @@ public class GenerateCodeMainPage extends BaseDialogWrapper {
         }
         advancedPanel.updateUI();
 
+    }
+
+    @Override
+    protected void doOKAction() {
+        if (StringUtils.isEmpty(packageField.getText())) {
+            NotificationMessageUtils.notifyError(GenerateCodeContextHelper.getContext().getProject(), "Please fill in the package name");
+            return;
+        }
+
+        if (StringUtils.isEmpty(pathField.getText())) {
+            NotificationMessageUtils.notifyError(GenerateCodeContextHelper.getContext().getProject(), "Please fill in the path name");
+            return;
+        }
+
+        submit();
+        super.doOKAction();
+    }
+
+    /**
+     * 开始封装代码生成器所需的参数信息
+     */
+    private void submit() {
+        String tableName = (String) tablesField.getSelectedItem();
+        DasTable tables = GenerateCodeContextHelper.getContext().getTables(tableName);
+        String author = GenerateCodeContextHelper.getContext().getSetting().getAuthor();
+        TableInfo tableInfo = new TableInfo(tables, author, packageField.getText(), pathField.getText());
+        setTableInfoChild(tableInfo);
+        try {
+            GenerateCodeContextHelper.getContext().getGenerateProcessor().generate(tableInfo, getTemplateCodes());
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void setTableInfoChild(TableInfo tableInfo) {
+        if (!advancedButton.isSelected()) {
+            return;
+        }
+        String author = GenerateCodeContextHelper.getContext().getSetting().getAuthor();
+        List<TableInfo> childTables = Lists.newArrayList();
+        for (AdvancedPanelComponent advancedPanelComponent : advancedPanelComponents) {
+            JComboBox tableField = advancedPanelComponent.getTableField();
+            DasTable childTable = GenerateCodeContextHelper.getContext().getTables((String) tableField.getSelectedItem());
+            TableInfo childTableInfo = new TableInfo(childTable, author, packageField.getText(), pathField.getText());
+            childTables.add(childTableInfo);
+        }
+        tableInfo.setChildTables(childTables);
+    }
+
+    private List<String> getTemplateCodes() {
+        String templateGroup = (String) commonPanelComponent.getTemplateField().getSelectedItem();
+        Component[] components = commonPanelComponent.getTemplatePanel().getComponents();
+        List<String> templateCodes = Lists.newArrayList();
+        for (Component component : components) {
+            if (!(component instanceof JCheckBox)) {
+                continue;
+            }
+            JCheckBox checkBox = (JCheckBox) component;
+            if (checkBox.isSelected()) {
+                templateCodes.add(checkBox.getText());
+            }
+        }
+        return GenerateCodeContextHelper.getContext().getTemplateCode(templateGroup, templateCodes);
     }
 
 

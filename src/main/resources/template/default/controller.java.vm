@@ -1,0 +1,60 @@
+## 设置基本信息以及回调内容
+## 设置ControllerName
+#set($beanName = $!stringUtils.append($!tableInfo.getName(),"Controller"))
+
+## 设置Service名称
+#set($serviceName = $!stringUtils.append($tableInfo.getName(),"Service"))
+#set($lowerCaseService = $stringUtils.firstLowerCase($!serviceName))
+
+
+#set($entityName = $!stringUtils.append($tableInfo.getName(),"Entity"))
+#set($basicPackage = $!tableInfo.getCallback().getPackageName())
+
+## 设置生成的文件名称
+$!tableInfo.getCallback().setFileName($!stringUtils.append($beanName,".java"))
+## 设置文件包名称
+$!tableInfo.getCallback().setPackageName($!stringUtils.append($basicPackage,".controller"))
+
+
+
+
+package $tableInfo.getCallback().getPackageName();
+
+
+import $!{basicPackage}.entity.$entityName;
+import $!{basicPackage}.service.$serviceName;
+import org.springframework.web.bind.annotation.*;
+
+import javax.annotation.Resource;
+import java.io.Serializable;
+import java.util.List;
+
+##表注释（宏定义）
+/**
+ * $!{beanName}-$!{tableInfo.getComment()}-访问层
+ *
+ * @author $!{tableInfo.getAuthor()}
+ */
+@RestController
+@RequestMapping("$!stringUtils.firstLowerCase($!tableInfo.getName())")
+public class $!{beanName}{
+    /**
+     * 服务对象
+     */
+    @Autowired
+    private ${serviceName} $!lowerCaseService;
+
+
+    /**
+     * 分页查询所有数据
+     *
+     * @param page 分页对象
+     * @param $!entityName 查询实体
+     * @return 所有数据
+     */
+    @GetMapping
+    public void selectAll($entityName $stringUtils.firstLowerCase($entityName)){
+        $!{lowerCaseService}.selectAll($stringUtils.firstLowerCase($entityName));
+    }
+
+}

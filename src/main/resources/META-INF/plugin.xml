@@ -19,6 +19,7 @@
         <!-- Add your extensions here -->
         <notificationGroup id="EtdGenerateCodePlugin Notification Group" displayType="BALLOON"/>
         <applicationService serviceImplementation="org.etd.generate.code.plugin.storage.SettingsStorage"></applicationService>
+        <projectService serviceInterface="org.etd.generate.code.plugin.processor.GenerateProcessor" serviceImplementation="org.etd.generate.code.plugin.processor.extend.VelocityGenerateProcessor"></projectService>
     </extensions>
 
     <actions>

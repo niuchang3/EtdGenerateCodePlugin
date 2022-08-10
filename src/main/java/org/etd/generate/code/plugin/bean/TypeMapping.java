@@ -1,7 +1,6 @@
 package org.etd.generate.code.plugin.bean;
 
 import lombok.Data;
-import org.etd.generate.code.plugin.constants.MatchType;
 
 @Data
 public class TypeMapping {
@@ -15,7 +14,7 @@ public class TypeMapping {
      */
     private String javaType;
     /**
-     * 匹配方式
+     * Java短类型
      */
-    private MatchType matchType;
+    private String shortJavaType;
 }

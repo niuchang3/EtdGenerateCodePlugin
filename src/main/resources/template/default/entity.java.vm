@@ -1,0 +1,31 @@
+#set($beanName = $!stringUtils.append($!tableInfo.getName(),"Entity"))
+$!tableInfo.getCallback().setFileName($!stringUtils.append($beanName,".java"))
+## 设置文件包名称
+$!tableInfo.getCallback().setPackageName($!stringUtils.append($tableInfo.getCallback().getPackageName(),".entity"))
+
+package $tableInfo.getCallback().getPackageName();
+
+import java.io.Serializable;
+import lombok.Data;
+
+/**
+ * $!{beanName}
+ * $!{tableInfo.getComment()}
+ *
+ * @author $!{tableInfo.getAuthor()}
+ */
+@Data
+@TableName("$!{tableInfo.getObj().getName()}")
+public class $!{beanName}  implements Serializable{
+#foreach($item in $tableInfo.getColumns() )
+    /**
+    *$!{item.getComment()}
+    */
+    #if($item.isPk)
+@TableId
+    #else
+@TableField
+    #end
+private $item.getShortJavaType() $item.getName();
+#end
+}

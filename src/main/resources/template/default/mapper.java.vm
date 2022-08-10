@@ -1,0 +1,23 @@
+#set($beanName = $!{stringUtils.append($!tableInfo.getName(),"Mapper")})
+#set($entityName = $!{stringUtils.append($!tableInfo.getName(),"Entity")})
+
+#set($packagePath = $!{tableInfo.getCallback().getPackageName()})
+
+$!tableInfo.getCallback().setFileName($!{stringUtils.append($beanName,".java")})
+$!tableInfo.getCallback().setPackageName($!{stringUtils.append($tableInfo.getCallback().getPackageName(),".mapper")})
+
+package $!{tableInfo.getCallback().getPackageName()}
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import $!{packagePathe}.entity.$!entityName;
+import org.apache.ibatis.annotations.Mapper;
+
+##表注释（宏定义）
+/**
+ * $!{beanName}-$!{tableInfo.getComment()}-Mapper层
+ *
+ * @author $!{tableInfo.getAuthor()}
+ */
+@Mapper
+public interface $!{beanName} extends BaseMapper<$!entityName> {
+
+}

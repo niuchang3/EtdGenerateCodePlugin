@@ -1,4 +1,4 @@
-package org.etd.generate.code.plugin.tool;
+package org.etd.generate.code.plugin.utils;
 
 import com.google.common.collect.Maps;
 import org.apache.commons.lang3.ObjectUtils;
@@ -58,6 +58,16 @@ public class CacheDataUtils {
      */
     public <T> T get(String key, Class<T> target) {
         return (T) cache.get(key);
+    }
+
+    /**
+     * 检查缓存中是否包含该key
+     *
+     * @param key
+     * @return
+     */
+    public boolean containsKey(String key) {
+        return cache.containsKey(key);
     }
 
     /**
