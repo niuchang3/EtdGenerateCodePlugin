@@ -6,6 +6,7 @@ import com.intellij.openapi.ui.PackageChooser;
 import com.intellij.psi.PsiPackage;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.ObjectUtils;
+import org.etd.generate.code.plugin.context.GenerateCodeContext;
 import org.etd.generate.code.plugin.context.GenerateCodeContextHelper;
 
 import java.awt.event.ActionEvent;
@@ -22,7 +23,8 @@ public class PackageButtonActionListener implements ActionListener {
     @SneakyThrows
     @Override
     public void actionPerformed(ActionEvent e) {
-        Project project = GenerateCodeContextHelper.getContext().getProject();
+        GenerateCodeContext context = GenerateCodeContextHelper.getContext();
+        Project project = context.getProject();
         PackageChooserDialog packageChooser = new PackageChooserDialog("PackageChooser", project);
         packageChooser.show();
         PsiPackage selectedPackage = packageChooser.getSelectedPackage();

@@ -3,6 +3,8 @@ package org.etd.generate.code.plugin.bean;
 import com.intellij.database.model.DasColumn;
 import com.intellij.database.util.DasUtil;
 import lombok.Data;
+import org.etd.generate.code.plugin.context.ApplicationContext;
+import org.etd.generate.code.plugin.context.GenerateCodeContext;
 import org.etd.generate.code.plugin.context.GenerateCodeContextHelper;
 import org.etd.generate.code.plugin.converter.BaseConverter;
 import org.etd.generate.code.plugin.converter.extend.TypeMappingConverter;
@@ -51,7 +53,8 @@ public class ColumnInfo implements Serializable {
         this.name = ToHumpUtil.toHump(obj.getName());
         this.comment = obj.getComment();
         this.type = obj.getDataType().typeName;
-        BaseConverter converter = GenerateCodeContextHelper.getContext().getConverter(TypeMappingConverter.class);
+        GenerateCodeContext context = GenerateCodeContextHelper.getContext();
+        BaseConverter converter = context.getConverter(TypeMappingConverter.class);
         String convertType = (String) converter.convert(obj);
         this.jdbcType = convertType;
         String[] split = this.jdbcType.split("\\.");

@@ -61,10 +61,17 @@ public class GenerateCodeMainPage extends BaseDialogWrapper {
 
 
     protected void initDialog() {
+        // 暂时不开启该功能
+        advancedButton.setVisible(false);
+        advancedPanel.setVisible(false);
+        joinButton.setVisible(false);
+        deleteJoinButton.setVisible(false);
+
         commonPanel.add(commonPanelComponent.getMainPanel(), getGridConstraints());
         initTablesField();
         // 填充默认的代码生成路径
-        pathField.setText(GenerateCodeContextHelper.getContext().getProject().getBasePath());
+        GenerateCodeContext context = GenerateCodeContextHelper.getContext();
+        pathField.setText(context.getProject().getBasePath());
         pathField.setEditable(false);
 //        packageField.setEditable(false);
         showButton(false);
@@ -104,7 +111,8 @@ public class GenerateCodeMainPage extends BaseDialogWrapper {
     }
 
     private void initTablesField() {
-        List<DasTable> tables = GenerateCodeContextHelper.getContext().getTables();
+        GenerateCodeContext context = GenerateCodeContextHelper.getContext();
+        List<DasTable> tables = context.getTables();
         for (DasTable table : tables) {
             tablesField.addItem(table.getName());
         }
@@ -187,13 +195,14 @@ public class GenerateCodeMainPage extends BaseDialogWrapper {
 
     @Override
     protected void doOKAction() {
+        GenerateCodeContext context = GenerateCodeContextHelper.getContext();
         if (StringUtils.isEmpty(packageField.getText())) {
-            NotificationMessageUtils.notifyError(GenerateCodeContextHelper.getContext().getProject(), "Please fill in the package name");
+            NotificationMessageUtils.notifyError(context.getProject(), "Please fill in the package name");
             return;
         }
 
         if (StringUtils.isEmpty(pathField.getText())) {
-            NotificationMessageUtils.notifyError(GenerateCodeContextHelper.getContext().getProject(), "Please fill in the path name");
+            NotificationMessageUtils.notifyError(context.getProject(), "Please fill in the path name");
             return;
         }
 
@@ -206,12 +215,14 @@ public class GenerateCodeMainPage extends BaseDialogWrapper {
      */
     private void submit() {
         String tableName = (String) tablesField.getSelectedItem();
-        DasTable tables = GenerateCodeContextHelper.getContext().getTables(tableName);
+        GenerateCodeContext context = GenerateCodeContextHelper.getContext();
+
+        DasTable tables = context.getTables(tableName);
         String author = GenerateCodeContextHelper.getContext().getSetting().getAuthor();
         TableInfo tableInfo = new TableInfo(tables, author, packageField.getText(), pathField.getText());
         setTableInfoChild(tableInfo);
         try {
-            GenerateCodeContextHelper.getContext().getGenerateProcessor().generate(tableInfo, getTemplateCodes());
+            context.getGenerateProcessor().generate(tableInfo, getTemplateCodes());
         } catch (CloneNotSupportedException e) {
             e.printStackTrace();
         }
@@ -225,7 +236,10 @@ public class GenerateCodeMainPage extends BaseDialogWrapper {
         List<TableInfo> childTables = Lists.newArrayList();
         for (AdvancedPanelComponent advancedPanelComponent : advancedPanelComponents) {
             JComboBox tableField = advancedPanelComponent.getTableField();
-            DasTable childTable = GenerateCodeContextHelper.getContext().getTables((String) tableField.getSelectedItem());
+
+            GenerateCodeContext context = GenerateCodeContextHelper.getContext();
+
+            DasTable childTable = context.getTables((String) tableField.getSelectedItem());
             TableInfo childTableInfo = new TableInfo(childTable, author, packageField.getText(), pathField.getText());
             childTables.add(childTableInfo);
         }
@@ -245,7 +259,8 @@ public class GenerateCodeMainPage extends BaseDialogWrapper {
                 templateCodes.add(checkBox.getText());
             }
         }
-        return GenerateCodeContextHelper.getContext().getTemplateCode(templateGroup, templateCodes);
+        GenerateCodeContext context = GenerateCodeContextHelper.getContext();
+        return context.getTemplateCode(templateGroup, templateCodes);
     }
 
 

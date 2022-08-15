@@ -6,6 +6,7 @@ import com.intellij.database.model.DasTable;
 import com.intellij.database.util.DasUtil;
 import lombok.Data;
 import org.apache.commons.lang3.ObjectUtils;
+import org.etd.generate.code.plugin.context.GenerateCodeContext;
 import org.etd.generate.code.plugin.context.GenerateCodeContextHelper;
 
 import javax.swing.*;
@@ -36,7 +37,8 @@ public class AdvancedPanelComponent {
 
     private void initTables() {
         tableMap.clear();
-        List<DasTable> tables = GenerateCodeContextHelper.getContext().getTables();
+        GenerateCodeContext context = GenerateCodeContextHelper.getContext();
+        List<DasTable> tables = context.getTables();
         for (DasTable table : tables) {
             tableField.addItem(table.getName());
             tableMap.putIfAbsent(table.getName(), table);

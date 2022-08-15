@@ -7,27 +7,39 @@ import org.apache.commons.lang3.ObjectUtils;
  */
 public class GenerateCodeContextHelper {
 
-    private static final ThreadLocal<GenerateCodeContext> context = ThreadLocal.withInitial(GenerateCodeContext::new);
+    private static final ThreadLocal<ApplicationContext> context = ThreadLocal.withInitial(ApplicationContext::new);
 
     /**
      * 从本地线程获取上下文
      *
      * @return
      */
-    public static GenerateCodeContext getContext() {
-        return context.get();
+    public static <T extends ApplicationContext> T getContext() {
+        return (T) context.get();
     }
 
-    public static void setContext(GenerateCodeContext generateCodeContext) {
-        context.set(generateCodeContext);
+    public static <T extends ApplicationContext> void setContext(T t) {
+        context.set(t);
     }
 
+
+    public static void setAttribute(String key, Object value) {
+        getContext().getAttributes().put(key, value);
+    }
+
+    public static Object getAttribute(String key) {
+        return getContext().getAttributes().get(key);
+    }
+
+    public static void remove(String key) {
+        getContext().getAttributes().remove(key);
+    }
 
     /**
      * 清理上下文内容
      */
     public static void clean() {
-        GenerateCodeContext requestContextModel = getContext();
+        ApplicationContext requestContextModel = getContext();
         if (ObjectUtils.isEmpty(requestContextModel)) {
             return;
         }

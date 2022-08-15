@@ -5,19 +5,17 @@ import com.google.common.collect.Maps;
 import com.intellij.database.model.DasColumn;
 import com.intellij.database.model.DasTable;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
-import org.etd.generate.code.plugin.bean.Settings;
 import org.etd.generate.code.plugin.bean.Template;
 import org.etd.generate.code.plugin.converter.BaseConverter;
 import org.etd.generate.code.plugin.converter.extend.ColumnConverter;
 import org.etd.generate.code.plugin.converter.extend.TableConverter;
 import org.etd.generate.code.plugin.converter.extend.TypeMappingConverter;
 import org.etd.generate.code.plugin.processor.GenerateProcessor;
-import org.etd.generate.code.plugin.storage.SettingsStorage;
 import org.etd.generate.code.plugin.utils.CacheDataUtils;
 
 import java.util.List;
@@ -27,10 +25,7 @@ import java.util.stream.Collectors;
 /**
  * 代码生成器上下文
  */
-@EqualsAndHashCode
-@ToString
-@Data
-public class GenerateCodeContext {
+public class GenerateCodeContext extends ApplicationContext {
 
     /**
      * 转换器
@@ -54,25 +49,20 @@ public class GenerateCodeContext {
     private AnActionEvent event;
 
     @Getter
-    private SettingsStorage settingsStorage;
-
-    @Getter
     private GenerateProcessor generateProcessor;
 
-
     public GenerateCodeContext() {
-    }
 
+    }
 
     public GenerateCodeContext(AnActionEvent event) {
         this.event = event;
         this.project = event.getProject();
-        this.settingsStorage = ApplicationManager.getApplication().getService(SettingsStorage.class);
         this.generateProcessor = event.getProject().getService(GenerateProcessor.class);
-
         converterMap.put(TableConverter.class, TableConverter.getSingleton());
         converterMap.put(ColumnConverter.class, ColumnConverter.getSingleton());
         converterMap.put(TypeMappingConverter.class, TypeMappingConverter.getSingleton());
+
     }
 
 
@@ -133,17 +123,14 @@ public class GenerateCodeContext {
         return (List<DasColumn>) converter.convert(dasTable);
     }
 
-    public Settings getSetting() {
-        return settingsStorage.getState();
-    }
 
-
+    @Override
     public void clean() {
+        super.clean();
         this.project = null;
         this.event = null;
         this.converterMap.clear();
         this.generateProcessor = null;
-        this.settingsStorage = null;
     }
 
     public List<String> getTemplateCode(String group, List<String> codes) {

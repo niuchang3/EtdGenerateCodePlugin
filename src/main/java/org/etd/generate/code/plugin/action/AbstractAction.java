@@ -2,9 +2,11 @@ package org.etd.generate.code.plugin.action;
 
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.util.NlsActions;
 import org.etd.generate.code.plugin.context.GenerateCodeContext;
 import org.etd.generate.code.plugin.context.GenerateCodeContextHelper;
+import org.etd.generate.code.plugin.storage.SettingsStorage;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

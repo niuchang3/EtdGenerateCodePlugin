@@ -20,6 +20,8 @@
         <notificationGroup id="EtdGenerateCodePlugin Notification Group" displayType="BALLOON"/>
         <applicationService serviceImplementation="org.etd.generate.code.plugin.storage.SettingsStorage"></applicationService>
         <projectService serviceInterface="org.etd.generate.code.plugin.processor.GenerateProcessor" serviceImplementation="org.etd.generate.code.plugin.processor.extend.VelocityGenerateProcessor"></projectService>
+
+        <applicationConfigurable instance="org.etd.generate.code.plugin.ui.extend.EtdGenerateCodeConfigurable"></applicationConfigurable>
     </extensions>
 
     <actions>
@@ -29,11 +31,5 @@
                popup="true">
             <add-to-group group-id="DatabaseViewPopupMenu" anchor="first"/>
         </group>
-
-        <!--        <action id="org.etd.generate.code.plugin.action.EtdGenerateCodeMainAction"-->
-        <!--                class="org.etd.generate.code.plugin.action.EtdGenerateCodeMainAction" text="EtdGenerateCode"-->
-        <!--                description="代码生成">-->
-        <!--            <add-to-group group-id="DatabaseView.Tools" anchor="first"/>-->
-        <!--        </action>-->
     </actions>
 </idea-plugin>
