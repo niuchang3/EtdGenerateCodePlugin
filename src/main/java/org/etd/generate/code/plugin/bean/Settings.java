@@ -1,5 +1,6 @@
 package org.etd.generate.code.plugin.bean;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.gson.Gson;
 import com.intellij.ide.fileTemplates.impl.UrlUtil;
 import lombok.Data;

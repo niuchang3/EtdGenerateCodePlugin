@@ -2,21 +2,31 @@ package org.etd.generate.code.plugin.ui.extend.component;
 
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.*;
+import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.EditorFactory;
 import com.intellij.openapi.editor.EditorSettings;
+import com.intellij.openapi.editor.event.DocumentEvent;
+import com.intellij.openapi.editor.event.DocumentListener;
 import com.intellij.openapi.editor.ex.EditorEx;
 import com.intellij.openapi.editor.highlighter.EditorHighlighterFactory;
+import com.intellij.openapi.editor.impl.EditorImpl;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
+import com.intellij.openapi.ui.InputValidator;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.ui.Splitter;
+import com.intellij.openapi.util.NlsSafe;
 import com.intellij.ui.components.JBList;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.jgoodies.common.collect.ArrayListModel;
 import lombok.Data;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.etd.generate.code.plugin.bean.Template;
 import org.etd.generate.code.plugin.constants.BaseConstants;
 import org.etd.generate.code.plugin.context.GenerateCodeContextHelper;
+import org.etd.generate.code.plugin.utils.NotificationMessageUtils;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -38,10 +48,13 @@ public class EditorPanelComponent {
 
     private String currentTemplateNameKey;
 
+    private int currentIndex = 0;
+
 
     public EditorPanelComponent() {
 
         init();
+        addListener();
     }
 
     private void init() {
@@ -96,23 +109,68 @@ public class EditorPanelComponent {
         rightPanel.add(this.editor.getComponent(), gridConstraints);
     }
 
+
     private AnAction createAddAction() {
         return new AnAction(AllIcons.General.Add) {
+
+
             @Override
             public void actionPerformed(@NotNull AnActionEvent e) {
+                Map<String, List<Template>> templates = (Map<String, List<Template>>) GenerateCodeContextHelper.getAttribute(BaseConstants.SYS_TEMPLATE_CODE);
+                if (BaseConstants.SYS_DEFAULT_CODE.equals(currentTemplateNameKey)) {
+                    Project defaultProject = ProjectManager.getInstance().getDefaultProject();
+                    NotificationMessageUtils.notifyWarning(defaultProject, "System default configuration does not allow operation");
+                    return;
+                }
 
+                String value = Messages.showInputDialog("", "addTemplate", Messages.getQuestionIcon(), "", new InputValidator() {
+                    @Override
+                    public boolean checkInput(@NlsSafe String inputString) {
+                        List<Template> templateList = templates.get(currentTemplateNameKey);
+                        for (Template template : templateList) {
+                            if (template.getCode().equals(inputString)) {
+                                return false;
+                            }
+                        }
+                        return true;
+                    }
+
+                    @Override
+                    public boolean canClose(@NlsSafe String inputString) {
+                        return checkInput(inputString);
+                    }
+                });
+                if (StringUtils.isNotEmpty(value)) {
+                    List<Template> templateList = templates.get(currentTemplateNameKey);
+                    templateList.add(new Template(value, ""));
+                    templates.put(currentTemplateNameKey, templateList);
+                    refresh(currentTemplateNameKey);
+                    templateNames.setSelectedValue(value,true);
+                }
             }
         };
     }
 
     private AnAction removeAddAction() {
+
         return new AnAction(AllIcons.General.Remove) {
             @Override
             public void actionPerformed(@NotNull AnActionEvent e) {
-
+                Map<String, List<Template>> templates = (Map<String, List<Template>>) GenerateCodeContextHelper.getAttribute(BaseConstants.SYS_TEMPLATE_CODE);
+                if (BaseConstants.SYS_DEFAULT_CODE.equals(currentTemplateNameKey)) {
+                    Project defaultProject = ProjectManager.getInstance().getDefaultProject();
+                    NotificationMessageUtils.notifyWarning(defaultProject, "System default configuration does not allow operation");
+                    return;
+                }
+                int nextIndex = currentIndex > 0 ? currentIndex -1 : 0;
+                templates.get(currentTemplateNameKey).remove(currentIndex);
+                ArrayListModel<String> model = (ArrayListModel<String>) templateNames.getModel();
+                model.remove(currentIndex);
+                templateNames.setSelectedIndex(nextIndex);
             }
         };
     }
+
 
     public void refresh(String templateNameKey) {
         this.currentTemplateNameKey = templateNameKey;
@@ -121,6 +179,9 @@ public class EditorPanelComponent {
         List<Template> templateList = templates.get(currentTemplateNameKey);
         List<String> list = templateList.stream().map(Template::getName).collect(Collectors.toList());
         ListModel<String> listModel = new ArrayListModel(list);
+        if (ObjectUtils.isNotEmpty(templateNames.getModel())) {
+            templateNames.removeAll();
+        }
         templateNames.setModel(listModel);
         templateNames.setSelectedIndex(0);
 
@@ -128,41 +189,60 @@ public class EditorPanelComponent {
 
         leftPanel.updateUI();
         rightPanel.updateUI();
-//
-//        String selectedValue = templateNames.getSelectedValue();
-//
-//        templateCode =
-//
-//                rightPanel.add(templateCode);
-//
-//        for (Template template : templateList) {
-//            if (template.getName().equals(selectedValue)) {
-//                templateCode.setText(template.getCode());
-//            }
-//        }
     }
 
     public void addActionListener() {
         templateNames.addListSelectionListener((listener) -> {
             JBList<String> source = (JBList) listener.getSource();
             String templateName = source.getSelectedValue();
+            currentIndex = source.getSelectedIndex();
             refreshEditor(templateName);
         });
     }
 
     public void refreshEditor(String templateName) {
+        if (StringUtils.isEmpty(templateName)) {
+            return;
+        }
         Map<String, List<Template>> templates = (Map<String, List<Template>>) GenerateCodeContextHelper.getAttribute(BaseConstants.SYS_TEMPLATE_CODE);
         List<Template> templateList = templates.get(currentTemplateNameKey);
-        for (Template template : templateList) {
-            if (!template.getName().equals(templateName)) {
+        for (int i = 0; i < templateList.size(); i++) {
+            if (!templateList.get(i).getName().equals(templateName)) {
                 continue;
             }
-            editor.getDocument().setText(template.getCode());
+            currentIndex = i;
+            writeEditor(editor, templateList.get(i).getCode(), templateName);
         }
+        EditorImpl editorImpl = (EditorImpl) editor;
+        editorImpl.setViewer(true);
+        if(!BaseConstants.SYS_DEFAULT_CODE.equals(currentTemplateNameKey)){
+            editorImpl.setViewer(false);
+        }
+
+    }
+
+    public void writeEditor(Editor editor, String text, String templateName) {
         Project defaultProject = ProjectManager.getInstance().getDefaultProject();
-        ((EditorEx)editor).setHighlighter(EditorHighlighterFactory.getInstance().createEditorHighlighter(defaultProject, templateName));
+        WriteCommandAction.runWriteCommandAction(defaultProject, () -> editor.getDocument().setText(text));
+        ((EditorEx) editor).setHighlighter(EditorHighlighterFactory.getInstance().createEditorHighlighter(defaultProject, templateName));
+    }
 
+    private void addListener() {
+        addEditorListener();
+    }
 
+    private void addEditorListener() {
+        editor.getDocument().addDocumentListener(new DocumentListener() {
+
+            @Override
+            public void documentChanged(@NotNull DocumentEvent event) {
+                DocumentListener.super.documentChanged(event);
+                Map<String, List<Template>> templates = (Map<String, List<Template>>) GenerateCodeContextHelper.getAttribute(BaseConstants.SYS_TEMPLATE_CODE);
+                List<Template> templateList = templates.get(currentTemplateNameKey);
+                Template template1 = templateList.get(currentIndex);
+                template1.setCode(event.getDocument().getText());
+            }
+        });
     }
 
 }

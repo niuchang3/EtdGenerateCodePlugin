@@ -1,8 +1,9 @@
 package org.etd.generate.code.plugin.listener;
 
+import com.intellij.formatting.service.DocumentMerger;
 import com.intellij.ide.util.PackageChooserDialog;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.PackageChooser;
+import com.intellij.openapi.vcs.merge.MultipleFileMergeDialog;
 import com.intellij.psi.PsiPackage;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.ObjectUtils;
@@ -33,5 +34,6 @@ public class PackageButtonActionListener implements ActionListener {
         }
         String packageName = selectedPackage.getQualifiedName();
         callback.call(packageName);
+//        MultipleFileMergeDialog fileMergeDialog = new MultipleFileMergeDialog();
     }
 }
