@@ -88,27 +88,30 @@ public class EtdGenerateCodeConfigurable extends BaseConfigurable {
     @Override
     public void apply() throws ConfigurationException {
 
+        Map<String, List<Template>> templates = (Map<String, List<Template>>) GenerateCodeContextHelper.getAttribute(BaseConstants.SYS_TEMPLATE_CODE);
+
         ApplicationContext context = GenerateCodeContextHelper.getContext();
         Settings dbSettings = context.getSetting();
+
+
+
         dbSettings.setAuthor(author.getText());
         dbSettings.setCurrentTemplateGroup((String) templateGroup.getSelectedItem());
+
         if (settings != null) {
             dbSettings.setAuthor(settings.getAuthor());
             dbSettings.setCurrentTemplateGroup(settings.getCurrentTemplateGroup());
             dbSettings.setTypeMappings(settings.getTypeMappings());
-        }
-
-        Map<String, List<Template>> templates = (Map<String, List<Template>>) GenerateCodeContextHelper.getAttribute(BaseConstants.SYS_TEMPLATE_CODE);
-        for (Map.Entry<String, List<Template>> entry : settings.getTemplates().entrySet()) {
-            if (entry.getKey().equals(BaseConstants.SYS_DEFAULT_CODE)) {
-                continue;
+            for (Map.Entry<String, List<Template>> entry : settings.getTemplates().entrySet()) {
+                if (entry.getKey().equals(BaseConstants.SYS_DEFAULT_CODE)) {
+                    continue;
+                }
+                if (templates.containsKey(entry.getKey())) {
+                    continue;
+                }
+                templates.put(entry.getKey(), entry.getValue());
             }
-            if (templates.containsKey(entry.getKey())) {
-                continue;
-            }
-            templates.put(entry.getKey(), entry.getValue());
         }
-
         dbSettings.setTemplates(templates);
         context.getSettingsStorage().loadState(dbSettings);
         settings = null;
