@@ -6,9 +6,9 @@
 $!tableInfo.getCallback().setFileName($!{stringUtils.append($beanName,".java")})
 $!tableInfo.getCallback().setPackageName($!{stringUtils.append($tableInfo.getCallback().getPackageName(),".mapper")})
 
-package $!{tableInfo.getCallback().getPackageName()}
+package $!{tableInfo.getCallback().getPackageName()};
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import $!{packagePathe}.entity.$!entityName;
+import $!{packagePath}.entity.$!entityName;
 import org.apache.ibatis.annotations.Mapper;
 
 ##表注释（宏定义）
