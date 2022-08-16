@@ -3,7 +3,7 @@
 #set($beanName = $!stringUtils.append($!tableInfo.getName(),"Controller"))
 
 ## 设置Service名称
-#set($serviceName = $!stringUtils.append($tableInfo.getName(),"Service"))
+#set($serviceName = $!stringUtils.append("I",$tableInfo.getName(),"Service"))
 #set($lowerCaseService = $stringUtils.firstLowerCase($!serviceName))
 
 

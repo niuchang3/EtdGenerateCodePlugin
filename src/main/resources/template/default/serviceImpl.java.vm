@@ -5,7 +5,7 @@
 
 #set($packagePath = $!tableInfo.getCallback().getPackageName())
 $!tableInfo.getCallback().setFileName($!stringUtils.append($beanName,".java"))
-$!tableInfo.getCallback().setPackageName($!stringUtils.append($tableInfo.getCallback().getPackageName(),".service.impl"))
+$!tableInfo.getCallback().setPackageName($!stringUtils.append($packagePath,".service.impl"))
 
 
 package $tableInfo.getCallback().getPackageName();
