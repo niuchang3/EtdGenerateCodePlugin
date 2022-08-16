@@ -1,6 +1,7 @@
 package org.etd.generate.code.plugin.ui.extend;
 
 import com.intellij.database.model.DasTable;
+import com.intellij.diff.merge.MergeUtil;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
@@ -57,6 +58,14 @@ public class GenerateCodeMainPage extends BaseDialogWrapper {
     public GenerateCodeMainPage(AnActionEvent event) {
         super(event, false, "EtdGenerateCode", 500, 300);
         initDialog();
+
+//        MergeUtil.
+//        MergeTool
+//        MergeTool.MergeViewer.
+//        DiffUtil.compareStreams();
+//        DiffManager diffManager = DiffManager.getInstance();
+//        diffManager.showMerge();
+//        diffManager.showDiff();
     }
 
 
