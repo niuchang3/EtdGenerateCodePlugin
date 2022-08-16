@@ -50,7 +50,7 @@ public class ColumnInfo implements Serializable {
     public ColumnInfo(DasColumn obj) {
         this.obj = obj;
         this.isPk = DasUtil.isPrimary(obj);
-        this.name = ToHumpUtil.toHump(obj.getName());
+        this.name = ToHumpUtil.toHump(obj.getName().toLowerCase());
         this.comment = obj.getComment();
         this.type = obj.getDataType().typeName;
         GenerateCodeContext context = GenerateCodeContextHelper.getContext();

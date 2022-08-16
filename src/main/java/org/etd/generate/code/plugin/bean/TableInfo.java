@@ -50,7 +50,7 @@ public class TableInfo implements Serializable {
 
         this.obj = obj;
         this.author = author;
-        this.name = ToHumpUtil.upperCaseFirstOne(ToHumpUtil.toHump(obj.getName()));
+        this.name = ToHumpUtil.upperCaseFirstOne(ToHumpUtil.toHump(obj.getName().toLowerCase()));
         this.callback = new Callback(packageName, path);
         this.comment = obj.getComment();
         this.columns = initColumnInfo();
