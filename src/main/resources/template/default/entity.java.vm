@@ -3,24 +3,38 @@ $!tableInfo.getCallback().setFileName($!stringUtils.append($beanName,".java"))
 ## 设置文件包名称
 $!tableInfo.getCallback().setPackageName($!stringUtils.append($tableInfo.getCallback().getPackageName(),".entity"))
 
+#if($tableInfo.getComment()) #set( $comment= $!stringUtils.append($tableInfo.getComment(),"实体")) #else #set( $comment= $!stringUtils.append($beanName,"实体")) #{end}
+
 package $tableInfo.getCallback().getPackageName();
 
 import java.io.Serializable;
 import lombok.Data;
-
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import com.sdtsoft.common.core.annotation.Excel;
+import com.sdtsoft.common.core.annotation.Excel.ColumnType;
+import com.fasterxml.jackson.annotation.JsonFormat;
 /**
- * $!{beanName}
- * $!{tableInfo.getComment()}
+ * $!{comment}
  *
  * @author $!{tableInfo.getAuthor()}
  */
+@ApiModel(value = "$!{comment}")
 @Data
 @TableName("$!{tableInfo.getObj().getName()}")
 public class $!{beanName}  implements Serializable{
 #foreach($item in $tableInfo.getColumns() )
+
     /**
     *$!{item.getComment()}
     */
+    #if($item.getShortJavaType() =="Date")
+@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @Excel(name = "$!{item.getComment()}" , width = 30, dateFormat = "yyyy-MM-dd HH:mm:ss")
+    #else
+@Excel(name = "$!{item.getComment()}")
+    #end
+@ApiModelProperty(value = "$!{item.getComment()}")
     #if($item.isPk)
 @TableId
     #else

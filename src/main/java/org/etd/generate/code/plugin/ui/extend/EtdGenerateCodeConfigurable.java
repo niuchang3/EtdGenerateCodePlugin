@@ -275,7 +275,7 @@ public class EtdGenerateCodeConfigurable extends BaseConfigurable {
         exportButton.addActionListener(listener -> {
             Project defaultProject = ProjectManager.getInstance().getDefaultProject();
             FileSaverDialog saveFileDialog = FileChooserFactory.getInstance().createSaveFileDialog(new FileSaverDescriptor("Save Config As Json", "Save to"), defaultProject);
-            VirtualFileWrapper saveFile = saveFileDialog.save((VirtualFile) null, "EtdGenerateCodePlugin.json");
+            VirtualFileWrapper saveFile = saveFileDialog.save((VirtualFile) null, "JQDefaultTemplate.json");
             FileUtil.createIfDoesntExist(saveFile.getFile());
             WriteCommandAction.runWriteCommandAction(defaultProject, () -> {
                 Settings setting = GenerateCodeContextHelper.getContext().getSetting();

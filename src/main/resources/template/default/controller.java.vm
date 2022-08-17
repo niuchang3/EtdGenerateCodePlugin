@@ -3,12 +3,15 @@
 #set($beanName = $!stringUtils.append($!tableInfo.getName(),"Controller"))
 
 ## 设置Service名称
-#set($serviceName = $!stringUtils.append("I",$tableInfo.getName(),"Service"))
+#set($serviceName = $!stringUtils.append($tableInfo.getName(),"Service"))
 #set($lowerCaseService = $stringUtils.firstLowerCase($!serviceName))
 
 
 #set($entityName = $!stringUtils.append($tableInfo.getName(),"Entity"))
 #set($basicPackage = $!tableInfo.getCallback().getPackageName())
+
+
+#if($tableInfo.getComment()) #set( $comment= $!stringUtils.append($tableInfo.getComment(),"接口")) #else #set( $comment= $!stringUtils.append($beanName,"接口")) #{end}
 
 ## 设置生成的文件名称
 $!tableInfo.getCallback().setFileName($!stringUtils.append($beanName,".java"))
@@ -18,43 +21,70 @@ $!tableInfo.getCallback().setPackageName($!stringUtils.append($basicPackage,".co
 
 
 
+
 package $tableInfo.getCallback().getPackageName();
 
-
-import $!{basicPackage}.entity.$entityName;
-import $!{basicPackage}.service.$serviceName;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.sdtsoft.common.core.web.domain.AjaxResult;
+import com.sdtsoft.system.entity.SysDictionaryEntity;
+import com.sdtsoft.system.service.ISysDictionaryService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
-import javax.annotation.Resource;
-import java.io.Serializable;
 import java.util.List;
 
-##表注释（宏定义）
+import $!{basicPackage}.entity.$entityName;
+import $!{basicPackage}.service.I$serviceName;
+
 /**
- * $!{beanName}-$!{tableInfo.getComment()}-访问层
+ *  $comment
  *
  * @author $!{tableInfo.getAuthor()}
  */
+@Api(value="$comment",tags = "$comment",description = "$comment")
 @RestController
 @RequestMapping("$!stringUtils.firstLowerCase($!tableInfo.getName())")
 public class $!{beanName}{
-    /**
-     * 服务对象
-     */
+
+
     @Autowired
-    private ${serviceName} $!lowerCaseService;
+    private I${serviceName} $!lowerCaseService;
 
 
-    /**
-     * 分页查询所有数据
-     *
-     * @param page 分页对象
-     * @param $!entityName 查询实体
-     * @return 所有数据
-     */
+
+    @ApiOperation(value="根据参数分页查询数据")
     @GetMapping
-    public void selectAll($entityName $stringUtils.firstLowerCase($entityName)){
-        $!{lowerCaseService}.selectAll($stringUtils.firstLowerCase($entityName));
+    public AjaxResult findPage(Page page, $entityName $stringUtils.firstLowerCase($entityName)) {
+        return AjaxResult.success($!{lowerCaseService}.findPageByEntity(page, $stringUtils.firstLowerCase($entityName)));
     }
 
+
+    @ApiOperation(value="通过主键查询单条数据")
+    @GetMapping("/{id}")
+    public AjaxResult selectOne(@PathVariable Long id) {
+        return AjaxResult.success($!{lowerCaseService}.findById(id));
+    }
+
+
+    @ApiOperation(value="新增数据")
+    @PostMapping
+    public AjaxResult insert(@RequestBody $entityName $stringUtils.firstLowerCase($entityName)) {
+        return AjaxResult.success($!{lowerCaseService}.insert($stringUtils.firstLowerCase($entityName)));
+    }
+
+
+    @ApiOperation(value="修改数据")
+    @PutMapping
+    public AjaxResult update(@RequestBody $entityName $stringUtils.firstLowerCase($entityName)) {
+        return AjaxResult.success($!{lowerCaseService}.updateById($stringUtils.firstLowerCase($entityName)));
+    }
+
+
+    @ApiOperation(value="删除数据")
+    @DeleteMapping
+    public AjaxResult delete(@RequestParam("idList") List<Long> idList) {
+        return AjaxResult.success($!{lowerCaseService}.deleteByPks(idList));
+    }
 }

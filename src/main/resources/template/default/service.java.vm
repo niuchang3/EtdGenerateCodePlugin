@@ -8,7 +8,7 @@ $!tableInfo.getCallback().setPackageName($!stringUtils.append($packagePath,".ser
 
 package $tableInfo.getCallback().getPackageName();
 
-import com.baomidou.mybatisplus.extension.service.IService;
+import com.sdtsoft.common.mybatis.core.BaseService;
 import $!{packagePath}.entity.$!entityName;
 
 /**
@@ -16,6 +16,6 @@ import $!{packagePath}.entity.$!entityName;
  *
  * @author $!{tableInfo.getAuthor()}
  */
-public interface $!{beanName} extends IService<$!entityName> {
+public interface $!{beanName} extends BaseService<$!entityName> {
 
 }

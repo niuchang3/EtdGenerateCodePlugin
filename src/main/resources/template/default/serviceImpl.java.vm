@@ -22,6 +22,6 @@ import org.springframework.stereotype.Service;
  * @author $!{tableInfo.getAuthor()}
  */
 @Service
-public class $!{beanName} extends ServiceImpl<$!{mapperName}, $!{entityName}> implements $!{serviceName}{
+public class $!{beanName} extends BaseServiceImpl<$!{mapperName}, $!{entityName}> implements $!{serviceName}{
 
 }
