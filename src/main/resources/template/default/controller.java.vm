@@ -44,7 +44,7 @@ import $!{basicPackage}.service.I$serviceName;
  */
 @Api(value="$comment",tags = "$comment",description = "$comment")
 @RestController
-@RequestMapping("$!stringUtils.firstLowerCase($!tableInfo.getName())")
+@RequestMapping("/$!stringUtils.firstLowerCase($!tableInfo.getName())")
 public class $!{beanName}{
 
 
