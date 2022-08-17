@@ -10,7 +10,7 @@ $!tableInfo.getCallback().setPackageName($!stringUtils.append($packagePath,".ser
 
 package $tableInfo.getCallback().getPackageName();
 
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.sdtsoft.common.mybatis.core.impl.BaseServiceImpl;
 import $!{packagePath}.mapper.$!{mapperName};
 import $!{packagePath}.entity.$!{entityName};
 import $!{packagePath}.service.$!{serviceName};
