@@ -8,6 +8,11 @@ $!tableInfo.getCallback().setPackageName($!stringUtils.append($tableInfo.getCall
 package $tableInfo.getCallback().getPackageName();
 
 import java.io.Serializable;
+import java.util.Date;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+
 import lombok.Data;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
