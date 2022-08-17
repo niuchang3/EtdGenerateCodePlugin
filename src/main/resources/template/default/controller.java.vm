@@ -25,16 +25,15 @@ $!tableInfo.getCallback().setPackageName($!stringUtils.append($basicPackage,".co
 package $tableInfo.getCallback().getPackageName();
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.sdtsoft.common.core.web.domain.AjaxResult;
-import com.sdtsoft.system.entity.SysDictionaryEntity;
-import com.sdtsoft.system.service.ISysDictionaryService;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 import java.util.List;
 
+import com.sdtsoft.common.core.web.domain.AjaxResult;
+import org.springframework.beans.factory.annotation.Autowired;
 import $!{basicPackage}.entity.$entityName;
 import $!{basicPackage}.service.I$serviceName;
 
