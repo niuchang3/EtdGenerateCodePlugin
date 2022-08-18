@@ -33,13 +33,6 @@ public class $!{beanName}  implements Serializable{
     /**
     *$!{item.getComment()}
     */
-    #if($item.getShortJavaType() =="Date")
-@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @Excel(name = "$!{item.getComment()}" , width = 30, dateFormat = "yyyy-MM-dd HH:mm:ss")
-    #else
-@Excel(name = "$!{item.getComment()}")
-    #end
-@ApiModelProperty(value = "$!{item.getComment()}")
     #if($item.isPk)
 @TableId
     #else

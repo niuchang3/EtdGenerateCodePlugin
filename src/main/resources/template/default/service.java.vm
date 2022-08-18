@@ -1,5 +1,6 @@
 #set($beanName = $!stringUtils.append("I",$tableInfo.getName(),"Service"))
 #set($entityName = $!stringUtils.append($tableInfo.getName(),"Entity"))
+#set($voName = $!stringUtils.append($tableInfo.getName(),"VO"))
 #set($packagePath = $!tableInfo.getCallback().getPackageName())
 
 $!tableInfo.getCallback().setFileName($!stringUtils.append($beanName,".java"))
@@ -10,12 +11,13 @@ package $tableInfo.getCallback().getPackageName();
 
 import com.sdtsoft.common.mybatis.core.BaseService;
 import $!{packagePath}.entity.$!entityName;
+import $!{packagePath}.vo.$!voName;
 
 /**
  * $!{beanName}-$!{tableInfo.getComment()}-Service
  *
  * @author $!{tableInfo.getAuthor()}
  */
-public interface $!{beanName} extends BaseService<$!entityName> {
+public interface $!{beanName}<$!entityName,$!voName> extends BaseService<$!entityName,$!voName> {
 
 }

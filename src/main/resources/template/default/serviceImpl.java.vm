@@ -1,6 +1,7 @@
 #set($beanName = $!stringUtils.append($tableInfo.getName(),"ServiceImpl"))
 #set($serviceName = $!stringUtils.append("I",$tableInfo.getName(),"Service"))
 #set($entityName = $!stringUtils.append($tableInfo.getName(),"Entity"))
+#set($voName = $!stringUtils.append($tableInfo.getName(),"VO"))
 #set($mapperName = $!stringUtils.append($tableInfo.getName(),"Mapper"))
 
 #set($packagePath = $!tableInfo.getCallback().getPackageName())
@@ -13,6 +14,7 @@ package $tableInfo.getCallback().getPackageName();
 import com.sdtsoft.common.mybatis.core.impl.BaseServiceImpl;
 import $!{packagePath}.mapper.$!{mapperName};
 import $!{packagePath}.entity.$!{entityName};
+import $!{packagePath}.vo.$!voName;
 import $!{packagePath}.service.$!{serviceName};
 import org.springframework.stereotype.Service;
 
@@ -22,6 +24,6 @@ import org.springframework.stereotype.Service;
  * @author $!{tableInfo.getAuthor()}
  */
 @Service
-public class $!{beanName} extends BaseServiceImpl<$!{mapperName}, $!{entityName}> implements $!{serviceName}{
+public class $!{beanName} extends BaseServiceImpl<$!{mapperName}, $!{entityName},$!{voName}> implements $!{serviceName}<$!entityName,$!voName>{
 
 }

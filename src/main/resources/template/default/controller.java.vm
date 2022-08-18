@@ -7,7 +7,7 @@
 #set($lowerCaseService = $stringUtils.firstLowerCase($!serviceName))
 
 
-#set($entityName = $!stringUtils.append($tableInfo.getName(),"Entity"))
+#set($voName = $!stringUtils.append($tableInfo.getName(),"VO"))
 #set($basicPackage = $!tableInfo.getCallback().getPackageName())
 
 
@@ -34,7 +34,7 @@ import java.util.List;
 
 import com.sdtsoft.common.core.web.domain.AjaxResult;
 import org.springframework.beans.factory.annotation.Autowired;
-import $!{basicPackage}.entity.$entityName;
+import $!{basicPackage}.vo.$voName;
 import $!{basicPackage}.service.I$serviceName;
 
 /**
@@ -55,8 +55,8 @@ public class $!{beanName}{
 
     @ApiOperation(value="根据参数分页查询数据")
     @GetMapping
-    public AjaxResult findPage(Page page, $entityName $stringUtils.firstLowerCase($entityName)) {
-        return AjaxResult.success($!{lowerCaseService}.findPageByEntity(page, $stringUtils.firstLowerCase($entityName)));
+    public AjaxResult findPage(Page page, $voName $stringUtils.firstLowerCase($voName)) {
+        return AjaxResult.success($!{lowerCaseService}.pageByVo(page, $stringUtils.firstLowerCase($voName)));
     }
 
 
@@ -69,15 +69,15 @@ public class $!{beanName}{
 
     @ApiOperation(value="新增数据")
     @PostMapping
-    public AjaxResult insert(@RequestBody $entityName $stringUtils.firstLowerCase($entityName)) {
-        return AjaxResult.success($!{lowerCaseService}.insert($stringUtils.firstLowerCase($entityName)));
+    public AjaxResult insert(@RequestBody $voName $stringUtils.firstLowerCase($voName)) {
+        return AjaxResult.success($!{lowerCaseService}.insert($stringUtils.firstLowerCase($voName)));
     }
 
 
     @ApiOperation(value="修改数据")
     @PutMapping
-    public AjaxResult update(@RequestBody $entityName $stringUtils.firstLowerCase($entityName)) {
-        return AjaxResult.success($!{lowerCaseService}.updateById($stringUtils.firstLowerCase($entityName)));
+    public AjaxResult update(@RequestBody $voName $stringUtils.firstLowerCase($voName)) {
+        return AjaxResult.success($!{lowerCaseService}.updateByPK($stringUtils.firstLowerCase($voName)));
     }
 
 
