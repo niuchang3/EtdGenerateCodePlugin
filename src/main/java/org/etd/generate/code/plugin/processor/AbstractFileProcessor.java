@@ -10,6 +10,8 @@ import org.etd.generate.code.plugin.context.GenerateCodeContext;
 import org.etd.generate.code.plugin.context.GenerateCodeContextHelper;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 public abstract class AbstractFileProcessor implements FileProcessor {
 
@@ -20,6 +22,7 @@ public abstract class AbstractFileProcessor implements FileProcessor {
             try {
                 VirtualFile childData = directory.createChildData(new Object(), fileName);
                 childData.setBOM(CharsetToolkit.UTF8_BOM);
+                childData.setCharset(StandardCharsets.UTF_8);
                 return childData;
             } catch (IOException e) {
                 e.printStackTrace();
