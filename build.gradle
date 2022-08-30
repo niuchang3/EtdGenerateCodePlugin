@@ -23,6 +23,7 @@ dependencies {
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
     version = '2021.2.3'
+//    type 'IC'
     type = 'IU'
     plugins = ['com.intellij.java', 'com.intellij.database']
     sandboxDir = "${rootProject.rootDir}/build/sandbox"
