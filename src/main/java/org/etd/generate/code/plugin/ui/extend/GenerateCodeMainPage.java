@@ -22,6 +22,8 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.List;
 
 @Slf4j
@@ -120,6 +122,43 @@ public class GenerateCodeMainPage extends BaseDialogWrapper {
     }
 
     private void initTablesField() {
+        tablesField.setEditable(true);
+        tablesField.getEditor().getEditorComponent().addKeyListener(new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+                char ch = e.getKeyChar();
+                if (ch != KeyEvent.VK_ENTER){
+                    return;
+                }
+
+                JTextField obj = (JTextField) e.getSource();
+                String text = obj.getText();
+                GenerateCodeContext context = GenerateCodeContextHelper.getContext();
+                List<DasTable> tables = context.getTables();
+                tablesField.removeAllItems();
+                for (DasTable table : tables) {
+                    if(StringUtils.isEmpty(text)){
+                        tablesField.addItem(table.getName());
+                        continue;
+                    }
+                    if(table.getName().startsWith(text)){
+                        tablesField.addItem(table.getName());
+                    }
+                }
+            }
+        });
+
+
         GenerateCodeContext context = GenerateCodeContextHelper.getContext();
         List<DasTable> tables = context.getTables();
         for (DasTable table : tables) {
