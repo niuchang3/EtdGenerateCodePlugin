@@ -1,98 +1,106 @@
 {
-  "author": "NiuChangChang",
-  "currentTemplateGroup": "default",
-  "typeMappings": [
-    {
-      "columnType": "varchar",
-      "javaType": "java.lang.String"
-    },
-    {
-      "columnType": "char",
-      "javaType": "java.lang.String"
-    },
-    {
-      "columnType": "tinytext",
-      "javaType": "java.lang.String"
-    },
-    {
-      "columnType": "mediumtext",
-      "javaType": "java.lang.String"
-    },
-    {
-      "columnType": "longtext",
-      "javaType": "java.lang.String"
-    },
-    {
-      "columnType": "date",
-      "javaType": "java.util.Date"
-    },
-    {
-      "columnType": "datetime",
-      "javaType": "java.util.Date"
-    },
-    {
-      "columnType": "timestamp",
-      "javaType": "java.util.Date"
-    },
-    {
-      "columnType": "time",
-      "javaType": "java.util.Date"
-    },
-    {
-      "columnType": "boolean",
-      "javaType": "java.lang.Boolean"
-    },
-    {
-      "columnType": "decimal",
-      "javaType": "java.math.BigDecimal"
-    },
-    {
-      "columnType": "integer",
-      "javaType": "java.lang.Integer"
-    },
-    {
-      "columnType": "int",
-      "javaType": "java.lang.Integer"
-    },
-    {
-      "columnType": "tinyint",
-      "javaType": "java.lang.Integer"
-    },
-    {
-      "columnType": "smallint",
-      "javaType": "java.lang.Integer"
-    },
-    {
-      "columnType": "mediumint",
-      "javaType": "java.lang.Integer"
-    },
-    {
-      "columnType": "bigint",
-      "javaType": "java.lang.Long"
-    }
-  ],
-  "templates": {
-    "default": [
-      {
-        "name": "controller.java.vm",
-        "code": "## 设置基本信息以及回调内容\n## 设置ControllerName\n#set($beanName = $!stringUtils.append($!tableInfo.getName(),\"Controller\"))\n\n## 设置Service名称\n#set($serviceName = $!stringUtils.append($tableInfo.getName(),\"Service\"))\n#set($lowerCaseService = $stringUtils.firstLowerCase($!serviceName))\n\n\n#set($entityName = $!stringUtils.append($tableInfo.getName(),\"Entity\"))\n#set($basicPackage = $!tableInfo.getCallback().getPackageName())\n\n## 设置生成的文件名称\n$!tableInfo.getCallback().setFileName($!stringUtils.append($beanName,\".java\"))\n## 设置文件包名称\n$!tableInfo.getCallback().setPackageName($!stringUtils.append($basicPackage,\".controller\"))\n\n\n\n\npackage $tableInfo.getCallback().getPackageName();\n\n\nimport $!{basicPackage}.entity.$entityName;\nimport $!{basicPackage}.service.$serviceName;\nimport org.springframework.web.bind.annotation.*;\n\nimport javax.annotation.Resource;\nimport java.io.Serializable;\nimport java.util.List;\n\n##表注释（宏定义）\n/**\n * $!{beanName}-$!{tableInfo.getComment()}-访问层\n *\n * @author $!{tableInfo.getAuthor()}\n */\n@RestController\n@RequestMapping(\"$!stringUtils.firstLowerCase($!tableInfo.getName())\")\npublic class $!{beanName}{\n    /**\n     * 服务对象\n     */\n    @Autowired\n    private I${serviceName} $!lowerCaseService;\n\n\n    /**\n     * 分页查询所有数据\n     *\n     * @param page 分页对象\n     * @param $!entityName 查询实体\n     * @return 所有数据\n     */\n    @GetMapping\n    public void selectAll($entityName $stringUtils.firstLowerCase($entityName)){\n        $!{lowerCaseService}.selectAll($stringUtils.firstLowerCase($entityName));\n    }\n\n}\n"
-      },
-      {
-        "name": "entity.java.vm",
-        "code": "#set($beanName = $!stringUtils.append($!tableInfo.getName(),\"Entity\"))\n$!tableInfo.getCallback().setFileName($!stringUtils.append($beanName,\".java\"))\n## 设置文件包名称\n$!tableInfo.getCallback().setPackageName($!stringUtils.append($tableInfo.getCallback().getPackageName(),\".entity\"))\n\npackage $tableInfo.getCallback().getPackageName();\n\nimport java.io.Serializable;\nimport lombok.Data;\n\n/**\n * $!{beanName}\n * $!{tableInfo.getComment()}\n *\n * @author $!{tableInfo.getAuthor()}\n */\n@Data\n@TableName(\"$!{tableInfo.getObj().getName()}\")\npublic class $!{beanName}  implements Serializable{\n#foreach($item in $tableInfo.getColumns() )\n    /**\n    *$!{item.getComment()}\n    */\n    #if($item.isPk)\n@TableId\n    #else\n@TableField\n    #end\nprivate $item.getShortJavaType() $item.getName();\n#end\n}\n"
-      },
-      {
-        "name": "mapper.java.vm",
-        "code": "#set($beanName = $!stringUtils.append($!tableInfo.getName(),\"Mapper\"))\n#set($entityName = $!stringUtils.append($!tableInfo.getName(),\"Entity\"))\n\n#set($packagePath = $!tableInfo.getCallback().getPackageName())\n\n\n$!tableInfo.getCallback().setFileName($!stringUtils.append($beanName,\".java\"))\n$!tableInfo.getCallback().setPackageName($!stringUtils.append($packagePath,\".mapper\"))\n\npackage $tableInfo.getCallback().getPackageName();\nimport com.baomidou.mybatisplus.core.mapper.BaseMapper;\nimport $!{packagePath}.entity.$!entityName;\nimport org.apache.ibatis.annotations.Mapper;\n\n##表注释（宏定义）\n/**\n * $!{beanName}-$!{tableInfo.getComment()}-Mapper层\n *\n * @author $!{tableInfo.getAuthor()}\n */\n@Mapper\npublic interface $!{beanName} extends BaseMapper<$!entityName> {\n\n}\n"
-      },
-      {
-        "name": "service.java.vm",
-        "code": "#set($beanName = $!stringUtils.append(\"I\",$tableInfo.getName(),\"Service\"))\n#set($entityName = $!stringUtils.append($tableInfo.getName(),\"Entity\"))\n#set($packagePath = $!tableInfo.getCallback().getPackageName())\n\n$!tableInfo.getCallback().setFileName($!stringUtils.append($beanName,\".java\"))\n$!tableInfo.getCallback().setPackageName($!stringUtils.append($packagePath,\".service\"))\n\n\npackage $tableInfo.getCallback().getPackageName();\n\nimport com.baomidou.mybatisplus.extension.service.IService;\nimport $!{packagePath}.entity.$!entityName;\n\n/**\n * $!{beanName}-$!{tableInfo.getComment()}-Service\n *\n * @author $!{tableInfo.getAuthor()}\n */\npublic interface $!{beanName} extends IService<$!entityName> {\n\n}\n"
-      },
-      {
-        "name": "serviceImpl.java.vm",
-        "code": "#set($beanName = $!stringUtils.append($tableInfo.getName(),\"ServiceImpl\"))\n#set($serviceName = $!stringUtils.append(\"I\",$tableInfo.getName(),\"Service\"))\n#set($entityName = $!stringUtils.append($tableInfo.getName(),\"Entity\"))\n#set($mapperName = $!stringUtils.append($tableInfo.getName(),\"Mapper\"))\n\n#set($packagePath = $!tableInfo.getCallback().getPackageName())\n$!tableInfo.getCallback().setFileName($!stringUtils.append($beanName,\".java\"))\n$!tableInfo.getCallback().setPackageName($!stringUtils.append($packagePath,\".service.impl\"))\n\n\npackage $tableInfo.getCallback().getPackageName();\n\nimport com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;\nimport $!{packagePath}.mapper.$!{mapperName};\nimport $!{packagePath}.entity.$!{entityName};\nimport $!{packagePath}.service.$!{serviceName};\nimport org.springframework.stereotype.Service;\n\n/**\n * $!{beanName}-$!{tableInfo.getComment()}-Service\n *\n * @author $!{tableInfo.getAuthor()}\n */\n@Service\npublic class $!{beanName} extends ServiceImpl<$!{mapperName}, $!{entityName}> implements $!{serviceName}{\n\n}\n"
-      }
-    ]
-  }
+	"author": "NiuChangChang",
+	"currentTemplateGroup": "default",
+	"typeMappings": [
+		{
+			"columnType": "varchar",
+			"javaType": "java.lang.String"
+		},
+		{
+			"columnType": "char",
+			"javaType": "java.lang.String"
+		},
+		{
+			"columnType": "text",
+			"javaType": "java.lang.String"
+		},
+		{
+			"columnType": "tinytext",
+			"javaType": "java.lang.String"
+		},
+		{
+			"columnType": "mediumtext",
+			"javaType": "java.lang.String"
+		},
+		{
+			"columnType": "longtext",
+			"javaType": "java.lang.String"
+		},
+		{
+			"columnType": "date",
+			"javaType": "java.util.Date"
+		},
+		{
+			"columnType": "datetime",
+			"javaType": "java.util.Date"
+		},
+		{
+			"columnType": "timestamp",
+			"javaType": "java.util.Date"
+		},
+		{
+			"columnType": "time",
+			"javaType": "java.util.Date"
+		},
+		{
+			"columnType": "boolean",
+			"javaType": "java.lang.Boolean"
+		},
+		{
+			"columnType": "decimal",
+			"javaType": "java.math.BigDecimal"
+		},
+		{
+			"columnType": "integer",
+			"javaType": "java.lang.Integer"
+		},
+		{
+			"columnType": "int",
+			"javaType": "java.lang.Integer"
+		},
+		{
+			"columnType": "tinyint",
+			"javaType": "java.lang.Integer"
+		},
+		{
+			"columnType": "smallint",
+			"javaType": "java.lang.Integer"
+		},
+		{
+			"columnType": "mediumint",
+			"javaType": "java.lang.Integer"
+		},
+		{
+			"columnType": "bigint",
+			"javaType": "java.lang.Long"
+		}
+	],
+	"templates": {
+		"default": [
+			{
+				"name": "controller.java.vm",
+				"code": "## 设置基本信息以及回调内容\n## 设置ControllerName\n#set($beanName = $!stringUtils.append($!tableInfo.getName(),\"Controller\"))\n\n## 设置Service名称\n#set($serviceName = $!stringUtils.append($tableInfo.getName(),\"Service\"))\n#set($lowerCaseService = $stringUtils.firstLowerCase($!serviceName))\n\n\n#set($entityName = $!stringUtils.append($tableInfo.getName(),\"Entity\"))\n#set($basicPackage = $!tableInfo.getCallback().getPackageName())\n\n\n#if($tableInfo.getComment()) #set( $comment= $!stringUtils.append($tableInfo.getComment(),\"接口\")) #else #set( $comment= $!stringUtils.append($beanName,\"接口\")) #{end}\n\n## 设置生成的文件名称\n$!tableInfo.getCallback().setFileName($!stringUtils.append($beanName,\".java\"))\n## 设置文件包名称\n$!tableInfo.getCallback().setPackageName($!stringUtils.append($basicPackage,\".controller\"))\n\n\n\n\n\npackage $tableInfo.getCallback().getPackageName();\n\nimport com.baomidou.mybatisplus.extension.plugins.pagination.Page;\n\nimport org.springframework.web.bind.annotation.*;\nimport io.swagger.annotations.Api;\nimport io.swagger.annotations.ApiOperation;\n\nimport java.util.List;\n\nimport com.sdtsoft.common.core.web.domain.AjaxResult;\nimport org.springframework.beans.factory.annotation.Autowired;\nimport $!{basicPackage}.entity.$entityName;\nimport $!{basicPackage}.service.I$serviceName;\n\n/**\n *  $comment\n *\n * @author $!{tableInfo.getAuthor()}\n */\n@Api(value=\"$comment\",tags = \"$comment\",description = \"$comment\")\n@RestController\n@RequestMapping(\"/$!stringUtils.firstLowerCase($!tableInfo.getName())\")\npublic class $!{beanName}{\n\n\n    @Autowired\n    private I${serviceName} $!lowerCaseService;\n\n\n\n    @ApiOperation(value=\"根据参数分页查询数据\")\n    @GetMapping\n    public AjaxResult findPage(Page page, $entityName $stringUtils.firstLowerCase($entityName)) {\n        return AjaxResult.success($!{lowerCaseService}.findPageByEntity(page, $stringUtils.firstLowerCase($entityName)));\n    }\n\n\n    @ApiOperation(value=\"通过主键查询单条数据\")\n    @GetMapping(\"/{id}\")\n    public AjaxResult selectOne(@PathVariable Long id) {\n        return AjaxResult.success($!{lowerCaseService}.findById(id));\n    }\n\n\n    @ApiOperation(value=\"新增数据\")\n    @PostMapping\n    public AjaxResult insert(@RequestBody $entityName $stringUtils.firstLowerCase($entityName)) {\n        return AjaxResult.success($!{lowerCaseService}.insert($stringUtils.firstLowerCase($entityName)));\n    }\n\n\n    @ApiOperation(value=\"修改数据\")\n    @PutMapping\n    public AjaxResult update(@RequestBody $entityName $stringUtils.firstLowerCase($entityName)) {\n        return AjaxResult.success($!{lowerCaseService}.updateById($stringUtils.firstLowerCase($entityName)));\n    }\n\n\n    @ApiOperation(value=\"删除数据\")\n    @DeleteMapping\n    public AjaxResult delete(@RequestParam(\"idList\") List<Long> idList) {\n        return AjaxResult.success($!{lowerCaseService}.deleteByPks(idList));\n    }\n}\n"
+			},
+			{
+				"name": "entity.java.vm",
+				"code": "#set($beanName = $!stringUtils.append($!tableInfo.getName(),\"Entity\"))\n$!tableInfo.getCallback().setFileName($!stringUtils.append($beanName,\".java\"))\n## 设置文件包名称\n$!tableInfo.getCallback().setPackageName($!stringUtils.append($tableInfo.getCallback().getPackageName(),\".entity\"))\n\n#if($tableInfo.getComment()) #set( $comment= $!stringUtils.append($tableInfo.getComment(),\"实体\")) #else #set( $comment= $!stringUtils.append($beanName,\"实体\")) #{end}\n\npackage $tableInfo.getCallback().getPackageName();\n\nimport java.io.Serializable;\nimport java.util.Date;\nimport com.baomidou.mybatisplus.annotation.TableField;\nimport com.baomidou.mybatisplus.annotation.TableId;\nimport com.baomidou.mybatisplus.annotation.TableName;\n\nimport lombok.Data;\nimport io.swagger.annotations.ApiModel;\nimport io.swagger.annotations.ApiModelProperty;\nimport com.sdtsoft.common.core.annotation.Excel;\nimport com.sdtsoft.common.core.annotation.Excel.ColumnType;\nimport com.fasterxml.jackson.annotation.JsonFormat;\n/**\n * $!{comment}\n *\n * @author $!{tableInfo.getAuthor()}\n */\n@ApiModel(value = \"$!{comment}\")\n@Data\n@TableName(\"$!{tableInfo.getObj().getName()}\")\npublic class $!{beanName}  implements Serializable{\n#foreach($item in $tableInfo.getColumns() )\n\n    /**\n    *$!{item.getComment()}\n    */\n    #if($item.getShortJavaType() ==\"Date\")\n@JsonFormat(pattern = \"yyyy-MM-dd HH:mm:ss\")\n    @Excel(name = \"$!{item.getComment()}\" , width = 30, dateFormat = \"yyyy-MM-dd HH:mm:ss\")\n    #else\n@Excel(name = \"$!{item.getComment()}\")\n    #end\n@ApiModelProperty(value = \"$!{item.getComment()}\")\n    #if($item.isPk)\n@TableId\n    #else\n@TableField\n    #end\nprivate $item.getShortJavaType() $item.getName();\n#end\n}\n"
+			},
+			{
+				"name": "mapper.java.vm",
+				"code": "#set($beanName = $!stringUtils.append($!tableInfo.getName(),\"Mapper\"))\n#set($entityName = $!stringUtils.append($!tableInfo.getName(),\"Entity\"))\n\n#set($packagePath = $!tableInfo.getCallback().getPackageName())\n\n\n$!tableInfo.getCallback().setFileName($!stringUtils.append($beanName,\".java\"))\n$!tableInfo.getCallback().setPackageName($!stringUtils.append($packagePath,\".mapper\"))\n\npackage $tableInfo.getCallback().getPackageName();\nimport com.baomidou.mybatisplus.core.mapper.BaseMapper;\nimport $!{packagePath}.entity.$!entityName;\nimport org.apache.ibatis.annotations.Mapper;\n\n##表注释（宏定义）\n/**\n * $!{beanName}-$!{tableInfo.getComment()}-Mapper层\n *\n * @author $!{tableInfo.getAuthor()}\n */\n@Mapper\npublic interface $!{beanName} extends BaseMapper<$!entityName> {\n\n}\n"
+			},
+			{
+				"name": "service.java.vm",
+				"code": "#set($beanName = $!stringUtils.append(\"I\",$tableInfo.getName(),\"Service\"))\n#set($entityName = $!stringUtils.append($tableInfo.getName(),\"Entity\"))\n#set($packagePath = $!tableInfo.getCallback().getPackageName())\n\n$!tableInfo.getCallback().setFileName($!stringUtils.append($beanName,\".java\"))\n$!tableInfo.getCallback().setPackageName($!stringUtils.append($packagePath,\".service\"))\n\n\npackage $tableInfo.getCallback().getPackageName();\n\nimport com.sdtsoft.common.mybatis.core.BaseService;\nimport $!{packagePath}.entity.$!entityName;\n\n/**\n * $!{beanName}-$!{tableInfo.getComment()}-Service\n *\n * @author $!{tableInfo.getAuthor()}\n */\npublic interface $!{beanName} extends BaseService<$!entityName> {\n\n}\n"
+			},
+			{
+				"name": "serviceImpl.java.vm",
+				"code": "#set($beanName = $!stringUtils.append($tableInfo.getName(),\"ServiceImpl\"))\n#set($serviceName = $!stringUtils.append(\"I\",$tableInfo.getName(),\"Service\"))\n#set($entityName = $!stringUtils.append($tableInfo.getName(),\"Entity\"))\n#set($mapperName = $!stringUtils.append($tableInfo.getName(),\"Mapper\"))\n\n#set($packagePath = $!tableInfo.getCallback().getPackageName())\n$!tableInfo.getCallback().setFileName($!stringUtils.append($beanName,\".java\"))\n$!tableInfo.getCallback().setPackageName($!stringUtils.append($packagePath,\".service.impl\"))\n\n\npackage $tableInfo.getCallback().getPackageName();\n\nimport com.sdtsoft.common.mybatis.core.impl.BaseServiceImpl;\nimport $!{packagePath}.mapper.$!{mapperName};\nimport $!{packagePath}.entity.$!{entityName};\nimport $!{packagePath}.service.$!{serviceName};\nimport org.springframework.stereotype.Service;\n\n/**\n * $!{beanName}-$!{tableInfo.getComment()}-Service\n *\n * @author $!{tableInfo.getAuthor()}\n */\n@Service\npublic class $!{beanName} extends BaseServiceImpl<$!{mapperName}, $!{entityName}> implements $!{serviceName}{\n\n}\n"
+			},
+			{
+				"name": "vo.java.vm",
+				"code": "#set($beanName = $!stringUtils.append($!tableInfo.getName(),\"VO\"))\n$!tableInfo.getCallback().setFileName($!stringUtils.append($beanName,\".java\"))\n## 设置文件包名称\n$!tableInfo.getCallback().setPackageName($!stringUtils.append($tableInfo.getCallback().getPackageName(),\".vo\"))\n\n#if($tableInfo.getComment()) #set( $comment= $!stringUtils.append($tableInfo.getComment(),\"实体VO\")) #else #set( $comment= $!stringUtils.append($beanName,\"实体VO\")) #{end}\n\npackage $tableInfo.getCallback().getPackageName();\n\nimport java.io.Serializable;\nimport java.util.Date;\nimport com.baomidou.mybatisplus.annotation.TableField;\nimport com.baomidou.mybatisplus.annotation.TableId;\nimport com.baomidou.mybatisplus.annotation.TableName;\n\nimport lombok.Data;\nimport io.swagger.annotations.ApiModel;\nimport io.swagger.annotations.ApiModelProperty;\nimport com.sdtsoft.common.core.annotation.Excel;\nimport com.sdtsoft.common.core.annotation.Excel.ColumnType;\nimport com.fasterxml.jackson.annotation.JsonFormat;\n/**\n * $!{comment}\n *\n * @author $!{tableInfo.getAuthor()}\n */\n@ApiModel(value = \"$!{comment}\")\n@Data\npublic class $!{beanName}  implements Serializable{\n#foreach($item in $tableInfo.getColumns() )\n\n    /**\n    *$!{item.getComment()}\n    */\n    #if($item.getShortJavaType() ==\"Date\")\n@JsonFormat(pattern = \"yyyy-MM-dd HH:mm:ss\")\n    @Excel(name = \"$!{item.getComment()}\" , width = 30, dateFormat = \"yyyy-MM-dd HH:mm:ss\")\n    #else\n@Excel(name = \"$!{item.getComment()}\")\n    #end\n@ApiModelProperty(value = \"$!{item.getComment()}\")\nprivate $item.getShortJavaType() $item.getName();\n    #if($item.getShortJavaType() ==\"Date\")\n    /**\n     *$!{item.getComment()}-开始时间\n     */\n@ApiModelProperty(value = \"$!{item.getComment()}开始时间\")\nprivate $item.getShortJavaType() start$!stringUtils.upperCaseFirstOne($item.getName());\n    /**\n     *$!{item.getComment()}-结束时间\n     */\n    @ApiModelProperty(value = \"$!{item.getComment()}结束时间\")\nprivate $item.getShortJavaType() end$!stringUtils.upperCaseFirstOne($item.getName());\n    #end\n#end\n}\n"
+			}
+		]
+	}
 }
